@@ -56,7 +56,7 @@ const Home = () => {
               opacity: 0.95,
             }}
           >
-            TechHire - Your platform to find exceptional developers and tech experts
+            Scripted Six - Your platform to find exceptional developers and tech experts
           </Typography>
           <Box sx={{ 
             display: 'flex', 

@@ -3,8 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
 import PersonIcon from '@mui/icons-material/Person';
-import WorkIcon from '@mui/icons-material/Work';
 import auth from '../user/auth-helper';
+import logo from '../static/logo.jpg';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -35,7 +35,21 @@ const Header = () => {
       }}
     >
       <Toolbar>
-        <WorkIcon sx={{ mr: 2, fontSize: 32 }} />
+        <Box
+          component="img"
+          src={logo}
+          alt="Scripted Six Logo"
+          sx={{
+            height: 45,
+            width: 45,
+            mr: 2,
+            borderRadius: 1,
+            transition: 'transform 0.3s ease',
+            '&:hover': {
+              transform: 'scale(1.1) rotate(5deg)',
+            },
+          }}
+        />
         <Typography 
           variant="h6" 
           component={Link} 
@@ -52,7 +66,7 @@ const Header = () => {
             },
           }}
         >
-          TechHire
+          Scripted Six
         </Typography>
 
         <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 2 }}>

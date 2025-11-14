@@ -16,7 +16,7 @@ const Footer = () => {
         <Grid container spacing={4}>
           <Grid item xs={12} sm={4}>
             <Typography variant="h6" gutterBottom>
-              TechHire
+              Scripted Six
             </Typography>
             <Typography variant="body2">
               Connecting tech experts worldwide with companies and clients.
@@ -41,7 +41,7 @@ const Footer = () => {
               Contact
             </Typography>
             <Typography variant="body2">
-              Email: info@techhire.com
+              Email: info@scriptedsix.com
             </Typography>
             <Typography variant="body2">
               Phone: +1 (555) 123-4567
@@ -50,7 +50,7 @@ const Footer = () => {
         </Grid>
         <Box mt={4}>
           <Typography variant="body2" align="center">
-            © {new Date().getFullYear()} TechHire. All rights reserved.
+            © {new Date().getFullYear()} Scripted Six. All rights reserved.
           </Typography>
         </Box>
       </Container>
