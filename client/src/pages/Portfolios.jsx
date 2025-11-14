@@ -53,8 +53,6 @@ const Portfolios = () => {
             { name: 'E-commerce Platform', description: 'Built a full-featured online store' },
             { name: 'Task Manager App', description: 'Real-time task management system' },
           ],
-          rating: 4.5,
-          reviewCount: 12,
           github: 'https://github.com/johndoe',
           linkedin: 'https://linkedin.com/in/johndoe',
           website: 'https://johndoe.dev',
@@ -72,8 +70,6 @@ const Portfolios = () => {
             { name: 'Dashboard Design', description: 'Modern analytics dashboard' },
             { name: 'Portfolio Website', description: 'Interactive portfolio showcase' },
           ],
-          rating: 5.0,
-          reviewCount: 20,
           github: 'https://github.com/janesmith',
           linkedin: 'https://linkedin.com/in/janesmith',
           website: 'https://janesmith.com',
@@ -91,8 +87,6 @@ const Portfolios = () => {
             { name: 'API Gateway', description: 'High-performance API management system' },
             { name: 'Data Pipeline', description: 'ETL pipeline for big data processing' },
           ],
-          rating: 4.8,
-          reviewCount: 15,
           github: 'https://github.com/mikejohnson',
           linkedin: 'https://linkedin.com/in/mikejohnson',
           website: '',
@@ -188,13 +182,6 @@ const Portfolios = () => {
                       {portfolio.title}
                     </Typography>
                   </Box>
-                </Box>
-
-                <Box sx={{ mb: 2 }}>
-                  <Rating value={portfolio.rating} precision={0.5} readOnly size="small" />
-                  <Typography variant="body2" color="text.secondary" component="span" sx={{ ml: 1 }}>
-                    ({portfolio.reviewCount} reviews)
-                  </Typography>
                 </Box>
 
                 <Typography variant="body2" paragraph>

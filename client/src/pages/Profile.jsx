@@ -10,46 +10,76 @@ import {
   Avatar,
   Chip,
   Divider,
-  IconButton,
+  Alert,
+  CircularProgress,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import PersonIcon from '@mui/icons-material/Person';
 import auth from '../user/auth-helper';
+import { read, update } from '../api/api-user';
 
 const Profile = () => {
   const [editing, setEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [profile, setProfile] = useState({
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    role: 'jobseeker', // or 'employer'
-    title: 'Full Stack Developer',
-    bio: 'Passionate developer with expertise in modern web technologies',
-    location: 'San Francisco, CA',
-    phone: '+1 (555) 123-4567',
-    skills: ['React', 'Node.js', 'MongoDB', 'AWS'],
-    github: 'https://github.com/johndoe',
-    linkedin: 'https://linkedin.com/in/johndoe',
-    website: 'https://johndoe.dev',
+    name: '',
+    email: '',
+    role: '',
+    title: '',
+    bio: '',
+    location: '',
+    phone: '',
+    skills: [],
+    github: '',
+    linkedin: '',
+    website: '',
   });
 
   const [formData, setFormData] = useState(profile);
 
   useEffect(() => {
-    // Fetch user profile
     fetchProfile();
   }, []);
 
   const fetchProfile = async () => {
+    setLoading(true);
+    setError('');
+    
     try {
-      // TODO: Replace with actual API call
-      // const response = await fetch('/api/users/profile', {
-      //   headers: { Authorization: `Bearer ${auth.isAuthenticated().token}` }
-      // });
-      // const data = await response.json();
-      // setProfile(data);
-      // setFormData(data);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
+      const jwt = auth.isAuthenticated();
+      if (!jwt) {
+        setError('You must be logged in to view your profile');
+        setLoading(false);
+        return;
+      }
+
+      const abortController = new AbortController();
+      const signal = abortController.signal;
+
+      const data = await read(
+        { userId: jwt.user._id },
+        { t: jwt.token },
+        signal
+      );
+
+      if (data && data.error) {
+        setError(data.error);
+      } else {
+        // Ensure skills is an array
+        const profileData = {
+          ...data,
+          skills: Array.isArray(data.skills) ? data.skills : [],
+        };
+        setProfile(profileData);
+        setFormData(profileData);
+      }
+    } catch (err) {
+      setError('Failed to fetch profile. Please try again.');
+      console.error('Error fetching profile:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -61,29 +91,52 @@ const Profile = () => {
   };
 
   const handleSave = async () => {
+    setError('');
+    setSuccess('');
+
     try {
-      // TODO: Replace with actual API call
-      // const response = await fetch('/api/users/profile', {
-      //   method: 'PUT',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     Authorization: `Bearer ${auth.isAuthenticated().token}`
-      //   },
-      //   body: JSON.stringify(formData),
-      // });
-      
-      setProfile(formData);
-      setEditing(false);
-      console.log('Profile updated:', formData);
-    } catch (error) {
-      console.error('Error updating profile:', error);
+      const jwt = auth.isAuthenticated();
+      if (!jwt) {
+        setError('You must be logged in to update your profile');
+        return;
+      }
+
+      const data = await update(
+        { userId: jwt.user._id },
+        { t: jwt.token },
+        formData
+      );
+
+      if (data && data.error) {
+        setError(data.error);
+      } else {
+        setProfile(formData);
+        setEditing(false);
+        setSuccess('Profile updated successfully!');
+        
+        // Clear success message after 3 seconds
+        setTimeout(() => setSuccess(''), 3000);
+      }
+    } catch (err) {
+      setError('Failed to update profile. Please try again.');
+      console.error('Error updating profile:', err);
     }
   };
 
   const handleCancel = () => {
     setFormData(profile);
     setEditing(false);
+    setError('');
   };
+
+  if (loading) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 4, textAlign: 'center' }}>
+        <CircularProgress />
+        <Typography sx={{ mt: 2 }}>Loading profile...</Typography>
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -104,6 +157,18 @@ const Profile = () => {
         </Box>
 
         <Divider sx={{ mb: 3 }} />
+
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError('')}>
+            {error}
+          </Alert>
+        )}
+
+        {success && (
+          <Alert severity="success" sx={{ mb: 3 }} onClose={() => setSuccess('')}>
+            {success}
+          </Alert>
+        )}
 
         <Grid container spacing={3}>
           <Grid item xs={12} md={4}>
@@ -155,7 +220,7 @@ const Profile = () => {
                   fullWidth
                   label="Title"
                   name="title"
-                  value={formData.title}
+                  value={formData.title || ''}
                   onChange={handleChange}
                   disabled={!editing}
                 />
@@ -165,7 +230,7 @@ const Profile = () => {
                   fullWidth
                   label="Location"
                   name="location"
-                  value={formData.location}
+                  value={formData.location || ''}
                   onChange={handleChange}
                   disabled={!editing}
                 />
@@ -175,7 +240,7 @@ const Profile = () => {
                   fullWidth
                   label="Phone"
                   name="phone"
-                  value={formData.phone}
+                  value={formData.phone || ''}
                   onChange={handleChange}
                   disabled={!editing}
                 />
@@ -185,7 +250,7 @@ const Profile = () => {
                   fullWidth
                   label="Role"
                   name="role"
-                  value={formData.role}
+                  value={formData.role || ''}
                   disabled
                 />
               </Grid>
@@ -196,7 +261,7 @@ const Profile = () => {
                   rows={3}
                   label="Bio"
                   name="bio"
-                  value={formData.bio}
+                  value={formData.bio || ''}
                   onChange={handleChange}
                   disabled={!editing}
                 />
@@ -215,7 +280,7 @@ const Profile = () => {
                   fullWidth
                   label="GitHub URL"
                   name="github"
-                  value={formData.github}
+                  value={formData.github || ''}
                   onChange={handleChange}
                   disabled={!editing}
                 />
@@ -225,7 +290,7 @@ const Profile = () => {
                   fullWidth
                   label="LinkedIn URL"
                   name="linkedin"
-                  value={formData.linkedin}
+                  value={formData.linkedin || ''}
                   onChange={handleChange}
                   disabled={!editing}
                 />
@@ -235,7 +300,7 @@ const Profile = () => {
                   fullWidth
                   label="Website URL"
                   name="website"
-                  value={formData.website}
+                  value={formData.website || ''}
                   onChange={handleChange}
                   disabled={!editing}
                 />
@@ -251,19 +316,23 @@ const Profile = () => {
               </Typography>
               {!editing ? (
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                  {profile.skills.map((skill, index) => (
-                    <Chip key={index} label={skill} color="primary" />
-                  ))}
+                  {profile.skills && profile.skills.length > 0 ? (
+                    profile.skills.map((skill, index) => (
+                      <Chip key={index} label={skill} color="primary" />
+                    ))
+                  ) : (
+                    <Typography color="text.secondary">No skills added yet</Typography>
+                  )}
                 </Box>
               ) : (
                 <TextField
                   fullWidth
                   label="Skills (comma-separated)"
-                  value={formData.skills.join(', ')}
+                  value={formData.skills ? formData.skills.join(', ') : ''}
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      skills: e.target.value.split(',').map((s) => s.trim()),
+                      skills: e.target.value.split(',').map((s) => s.trim()).filter(s => s),
                     })
                   }
                   helperText="Enter skills separated by commas"

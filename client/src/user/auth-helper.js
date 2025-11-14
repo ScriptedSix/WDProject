@@ -1,4 +1,3 @@
-//  Author: Elizaveta Semenova - 301457815
 import { signout } from '../api/api-auth.js'
 
 const auth = {

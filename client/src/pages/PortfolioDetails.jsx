@@ -94,22 +94,6 @@ const PortfolioDetails = () => {
           'AWS Certified Developer',
           'MongoDB Certified Developer',
         ],
-        rating: 4.5,
-        reviewCount: 12,
-        reviews: [
-          {
-            author: 'Jane Smith',
-            rating: 5,
-            comment: 'Excellent developer! Delivered the project on time and exceeded expectations.',
-            date: '2024-10-15',
-          },
-          {
-            author: 'Mike Johnson',
-            rating: 4,
-            comment: 'Great communication and technical skills. Would work with again.',
-            date: '2024-09-20',
-          },
-        ],
         github: 'https://github.com/johndoe',
         linkedin: 'https://linkedin.com/in/johndoe',
         website: 'https://johndoe.dev',
@@ -154,12 +138,6 @@ const PortfolioDetails = () => {
             <Typography variant="h5" color="text.secondary" gutterBottom>
               {portfolio.title}
             </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Rating value={portfolio.rating} precision={0.5} readOnly />
-              <Typography variant="body2" color="text.secondary">
-                ({portfolio.reviewCount} reviews)
-              </Typography>
-            </Box>
           </Box>
           <Box>
             <Button variant="contained" startIcon={<EmailIcon />}>
@@ -244,31 +222,6 @@ const PortfolioDetails = () => {
                   {exp.description}
                 </Typography>
                 {index < portfolio.experience.length - 1 && <Divider sx={{ mt: 2 }} />}
-              </Box>
-            ))}
-          </Paper>
-
-          {/* Reviews */}
-          <Paper elevation={2} sx={{ p: 3 }}>
-            <Typography variant="h5" fontWeight="bold" gutterBottom>
-              Reviews
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
-            {portfolio.reviews.map((review, index) => (
-              <Box key={index} sx={{ mb: 2 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                  <Typography variant="subtitle1" fontWeight="bold">
-                    {review.author}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {new Date(review.date).toLocaleDateString()}
-                  </Typography>
-                </Box>
-                <Rating value={review.rating} readOnly size="small" />
-                <Typography variant="body2" sx={{ mt: 1 }}>
-                  {review.comment}
-                </Typography>
-                {index < portfolio.reviews.length - 1 && <Divider sx={{ mt: 2 }} />}
               </Box>
             ))}
           </Paper>
