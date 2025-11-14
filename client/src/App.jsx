@@ -1,6 +1,5 @@
 import Signup from './user/Signup.jsx'
 import Signin from './user/Signin.jsx'
-
 // import "./styles/styles.css";
 
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
