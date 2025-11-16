@@ -18,7 +18,6 @@ import { signin } from "../api/api-auth.js";
 import { styles } from "../styles/styles.js";
 import Logo from "../static/logo.jpg";
 
-
 export default function Signin() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -29,32 +28,55 @@ export default function Signin() {
     redirectToReferrer: false,
   });
 
-  const clickSubmit = () => {
-    const user = {
-      email: values.email || undefined,
-      password: values.password || undefined,
+  const handleChange = (name) => (event) => {
+    setValues({ ...values, [name]: event.target.value, error: "" });
+  };
+
+  const clickSubmit = async () => {
+  const user = {
+    email: values.email,
+    password: values.password,
+  };
+
+  if (!user.email || !user.password) {
+    setValues({ ...values, error: "Email and password are required" });
+    return;
+  }
+
+  try {
+    const data = await signin(user);
+    if (data.error || !data.token || !data._id) {
+      setValues({ ...values, error: data.error || "Login failed" });
+      return;
+    }
+
+    const authData = {
+      token: data.token,
+      user: {
+        _id: data._id,
+        name: data.name,
+        email: data.email,
+        role: data.role,
+      },
     };
 
-    signin(user).then((data) => {
-      if (data.error) {
-        setValues({ ...values, error: data.error });
-      } else {
-        auth.authenticate(data, () => {
-          setValues({ ...values, error: "", redirectToReferrer: true });
-        });
-      }
+    auth.authenticate(authData, () => {
+      setValues({ ...values, error: "", redirectToReferrer: true });
     });
-  };
 
-  const handleChange = (name) => (event) => {
-    setValues({ ...values, [name]: event.target.value });
-  };
+  } catch (err) {
+    console.error("Signin error:", err);
+    setValues({ ...values, error: "Network error. Please try again." });
+  }
+};
+
+
 
   const { from } = location.state || { from: { pathname: "/" } };
   const { redirectToReferrer } = values;
 
   if (redirectToReferrer) {
-    return <Navigate to={from} />;
+    return <Navigate to={from} replace />;
   }
 
   return (
@@ -78,17 +100,17 @@ export default function Signin() {
       <Card sx={styles.card}>
         {/* Logo */}
         <Box sx={styles.logoContainer}>
-            <Box sx={styles.logoWrapper}>
-                <img
-                    src={Logo}
-                    alt="custom logo"
-                    style={{
-                    width: "100px",
-                    height: "100px",
-                    objectFit: "cover"
-                    }}
-                />
-            </Box>
+          <Box sx={styles.logoWrapper}>
+            <img
+              src={Logo}
+              alt="custom logo"
+              style={{
+                width: "100px",
+                height: "100px",
+                objectFit: "cover",
+              }}
+            />
+          </Box>
         </Box>
 
         {/* Company name */}
@@ -96,7 +118,7 @@ export default function Signin() {
           TerraCode
         </Typography>
 
-        {/* Welcoming text */}
+        {/* Welcome text */}
         <Typography variant="h6" sx={styles.welcomeText}>
           Welcome Back to TerraCode
         </Typography>
@@ -147,21 +169,21 @@ export default function Signin() {
 
         {/* Signup link */}
         <Typography variant="body2" sx={{ color: "#6b7280", fontSize: "0.875rem" }}>
-            New to the TerraCode?{"  "}
-            <Typography
-                component="a"
-                href="/signup"
-                sx={{
-                color: "#1e3a8a",
-                fontWeight: 600,
-                textDecoration: "none",
-                "&:hover": {
-                    textDecoration: "underline",
-                },
+          New to the TerraCode?{"  "}
+          <Typography
+            component="a"
+            href="/signup"
+            sx={{
+              color: "#1e3a8a",
+              fontWeight: 600,
+              textDecoration: "none",
+              "&:hover": {
+                textDecoration: "underline",
+              },
             }}
-            >
+          >
             Sign Up
-            </Typography>
+          </Typography>
         </Typography>
       </Card>
     </Box>
