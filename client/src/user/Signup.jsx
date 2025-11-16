@@ -77,7 +77,6 @@ export default function Signup() {
           left: 24,
           color: "#1f2937",
         }}
-        onClick={() => navigate('/')}
       >
         <CloseIcon />
       </IconButton>
